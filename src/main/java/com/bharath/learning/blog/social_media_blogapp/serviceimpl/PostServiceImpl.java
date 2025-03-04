@@ -3,13 +3,20 @@ package com.bharath.learning.blog.social_media_blogapp.serviceimpl;
 import com.bharath.learning.blog.social_media_blogapp.dto.PostDto;
 import com.bharath.learning.blog.social_media_blogapp.entity.Post;
 import com.bharath.learning.blog.social_media_blogapp.exception.ResourceNotFound;
+import com.bharath.learning.blog.social_media_blogapp.pageLoad.PostResponse;
 import com.bharath.learning.blog.social_media_blogapp.repository.PostRepository;
 import com.bharath.learning.blog.social_media_blogapp.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import lombok.Builder;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.bharath.learning.blog.social_media_blogapp.pageLoad.PostResponse.*;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -36,18 +43,42 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public List<PostDto> getAllPosts() {
-      List<Post> allPosts=  postRepository.findAll();
-             //Map PostEntity to PostDto
-      List<PostDto>  listpostDto= allPosts.stream().map(post->mapEntityToPostDto(post)).collect(Collectors.toList());
-        return listpostDto;
+
+
+
+
+    public PostResponse getAllPosts(int pageNo,int pageSize) {
+      Pageable pageable= PageRequest.of(pageNo,pageSize);
+     Page<Post> allPosts=  postRepository.findAll(pageable);
+            //Map PostEntity to PostDto
+    List<PostDto>  listpostDto= allPosts.stream().map(post->mapEntityToPostDto(post)).collect(Collectors.toList());
+
+        //Cutomise PostResponse
+        PostResponse postResponse= PostResponse
+                .builder()
+                .content(listpostDto)
+                .pageNo(allPosts.getNumber())
+                .pageSize(allPosts.getSize())
+                .totalElements(allPosts.getTotalElements())
+                .totalPages(allPosts.getTotalPages())
+                .isLastPage(allPosts.isLast())
+                .build();
+    return postResponse;
     }
+
+//    public List<PostDto> getAllPosts() {
+//      List<Post> allPosts=  postRepository.findAll();
+//             //Map PostEntity to PostDto
+//      List<PostDto>  listpostDto= allPosts.stream().map(post->mapEntityToPostDto(post)).collect(Collectors.toList());
+//        return listpostDto;
+//    }
 
     @Override
     public PostDto getPostById(Long id) {
        Post post=postRepository.findById(id).orElseThrow(()->new ResourceNotFound("Post","id",String.valueOf(id)));
       PostDto postDto= mapEntityToPostDto(post);
         return postDto;
+
     }
 
     @Override

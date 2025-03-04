@@ -1,6 +1,7 @@
 package com.bharath.learning.blog.social_media_blogapp.controller;
 
 import com.bharath.learning.blog.social_media_blogapp.dto.PostDto;
+import com.bharath.learning.blog.social_media_blogapp.pageLoad.PostResponse;
 import com.bharath.learning.blog.social_media_blogapp.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,10 +22,18 @@ public class PostController {
 
         return new ResponseEntity(savedPostDto, HttpStatus.CREATED);
     }
+//
+//    @GetMapping
+//    public List<PostDto> getAllPosts() {
+//        return postService.getAllPosts();
+//    }
 
+//Pagination and sorting
     @GetMapping
-    public List<PostDto> getAllPosts() {
-        return postService.getAllPosts();
+    public PostResponse getAllPosts(@RequestParam(value="pageNo",defaultValue = "0",required = false) int pageNo,
+                                    @RequestParam(value="pageSize",defaultValue = "10",required = false) int pageSize) {
+
+        return postService.getAllPosts(pageNo,pageSize);
     }
 
     @GetMapping("/{id}")
