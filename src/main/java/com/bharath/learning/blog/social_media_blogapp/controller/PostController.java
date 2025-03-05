@@ -31,9 +31,11 @@ public class PostController {
 //Pagination and sorting
     @GetMapping
     public PostResponse getAllPosts(@RequestParam(value="pageNo",defaultValue = "0",required = false) int pageNo,
-                                    @RequestParam(value="pageSize",defaultValue = "10",required = false) int pageSize) {
+                                    @RequestParam(value="pageSize",defaultValue = "10",required = false) int pageSize,
+                                    @RequestParam(value="sortBy",defaultValue = "id",required = false)String sortBy,
+                                    @RequestParam(value="sortDir",defaultValue = "id",required = false)String sortDir ) {
 
-        return postService.getAllPosts(pageNo,pageSize);
+        return postService.getAllPosts(pageNo,pageSize,sortBy,sortDir);
     }
 
     @GetMapping("/{id}")
