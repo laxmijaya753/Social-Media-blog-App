@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import lombok.Builder;
 
@@ -47,8 +48,16 @@ public class PostServiceImpl implements PostService {
 
 
 
-    public PostResponse getAllPosts(int pageNo,int pageSize) {
-      Pageable pageable= PageRequest.of(pageNo,pageSize);
+    public PostResponse getAllPosts(int pageNo,int pageSize,String sortBy,String sortDir) {
+        Pageable pageable;
+        if(sortBy !=null && sortDir!=null){
+            Sort sort=sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+            pageable= PageRequest.of(pageNo,pageSize,sort);
+        }
+        else{
+            pageable= PageRequest.of(pageNo,pageSize);
+        }
+
      Page<Post> allPosts=  postRepository.findAll(pageable);
             //Map PostEntity to PostDto
     List<PostDto>  listpostDto= allPosts.stream().map(post->mapEntityToPostDto(post)).collect(Collectors.toList());
