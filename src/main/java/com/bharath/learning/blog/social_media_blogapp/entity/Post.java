@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comments;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -53,4 +57,7 @@ private String content;
     public void setContent(String content) {
         this.content = content;
     }
+    //One to Mant mapping b/w post and comment
+    @OneToMany(mappedBy ="post",cascade =CascadeType.ALL,orphanRemoval = true)
+    private Set<Comment> comments=new HashSet<>();
 }
